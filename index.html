@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZFS Storage Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-100 p-4">
+    <div class="max-w-2xl mx-auto">
+      <h1
+        class="mb-4 text-4xl font-extrabold text-gray-800 md:text-5xl lg:text-5xl mb-6 text-center"
+      >
+        <span
+          class="text-transparent bg-clip-text bg-gradient-to-r to-indigo-600 from-sky-400"
+          >ZFS</span
+        >
+        Storage Calculator
+      </h1>
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Number of Disks</label
+            >
+            <input
+              type="number"
+              id="disks"
+              min="1"
+              value="4"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Disk Size (GB)</label
+            >
+            <input
+              type="number"
+              id="diskSize"
+              min="1"
+              value="1000"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Redundancy Level</label
+            >
+            <select
+              id="faultTolerance"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="none">None (striped)</option>
+              <option value="single">Single Parity (raidz1)</option>
+              <option value="double">Double Parity (raidz2)</option>
+              <option value="triple">Triple Parity (raidz3)</option>
+              <option value="mirror" selected>Mirror Pairs</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Record Size (KB)</label
+            >
+            <input
+              type="number"
+              id="recordSize"
+              min="1"
+              max="128"
+              value="128"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">
+              Effective Capacity (%)
+            </label>
+            <input
+              type="number"
+              id="effectiveCapacityPct"
+              min="1"
+              max="100"
+              value="80"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="error"
+        class="flex items-center p-4 mb-4 text-sm font-medium text-red-900 rounded-lg bg-red-100"
+        role="alert"
+        style="display: none"
+      ></div>
+
+      <div class="bg-white rounded-lg shadow-md p-4" id="results">
+        <div id="error" class="error" style="display: none"></div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Results</h2>
+        <div class="space-y-4">
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i class="fas fa-hdd mr-2 text-blue-500"></i>
+                <span class="font-medium text-gray-700">Usable Capacity:</span>
+              </div>
+              <span class="text-lg font-bold" id="usableCapacity">-</span>
+            </div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i class="fas fa-chart-line mr-2 text-blue-500"></i>
+                <span class="font-medium text-gray-700"
+                  >Effective Capacity:</span
+                >
+              </div>
+              <span class="text-lg font-bold" id="effectiveCapacity">-</span>
+            </div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i class="fas fa-database mr-2 text-blue-500"></i>
+                <span class="font-medium text-gray-700">Max Capacity:</span>
+              </div>
+              <span class="text-lg font-bold" id="maxCapacity">-</span>
+            </div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i class="fas fa-sync mr-2 text-blue-500"></i>
+                <span class="font-medium text-gray-700">Mirror Pairs:</span>
+              </div>
+              <span class="text-lg font-bold" id="mirrorPairs">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-white rounded-lg shadow-md p-4">
+        <h3 class="font-medium text-gray-800 mb-2">Redundancy Levels</h3>
+        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+          <li>
+            None (striped): Data is striped across all disks with no redundancy.
+          </li>
+          <li>
+            Single Parity (raidz1): Data is striped across disks with single
+            parity for fault tolerance.
+          </li>
+          <li>
+            Double Parity (raidz2): Data is striped across disks with double
+            parity for fault tolerance.
+          </li>
+          <li>
+            Triple Parity (raidz3): Data is striped across disks with triple
+            parity for maximum fault tolerance.
+          </li>
+          <li>
+            Mirror Pairs: Data is mirrored across pairs of disks for redundancy.
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-6 bg-white rounded-lg shadow-md p-4">
+        <h3 class="font-medium text-gray-800 mb-2">
+          What is Effective Capacity?
+        </h3>
+        <p class="text-gray-700">
+          Effective capacity represents the percentage of total raw capacity
+          that is actually available for storing data. This accounts for ZFS
+          overhead such as metadata, checksums, and other system features. The
+          default value of 80% is typical for ZFS, but you can adjust this value
+          based on your specific needs.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      function isPowerOfTwo(n) {
+        return (n & (n - 1)) === 0 && n !== 0;
+      }
+
+      function calculate() {
+        const disks = parseInt(document.getElementById("disks").value);
+        const diskSize = parseInt(document.getElementById("diskSize").value);
+        const redundancy = document.getElementById("faultTolerance").value;
+        const recordSize = parseInt(
+          document.getElementById("recordSize").value
+        );
+        const effectiveCapacityPct =
+          parseInt(document.getElementById("effectiveCapacityPct").value) / 100;
+
+        let usableDisks;
+        let mirrorPairs = 0;
+        let errorMessage = "";
+
+        // Check for invalid record size
+        if (!isPowerOfTwo(recordSize)) {
+          errorMessage =
+            "Record size must be a power of 2 (e.g., 4, 8, 16, 32, 64, 128)";
+        }
+
+        // Check for valid disk size
+        if (diskSize < 1) {
+          errorMessage = "Disk size must be at least 1 GB";
+        }
+
+        // Check for valid number of disks
+        if (disks < 1) {
+          errorMessage = "Number of disks must be at least 1";
+        }
+
+        if (errorMessage) {
+          document.getElementById("error").textContent = errorMessage;
+          document.getElementById("error").style.display = "block";
+          document.getElementById("results").style.display = "none";
+          return;
+        }
+
+        switch (redundancy) {
+          case "none":
+            usableDisks = disks;
+            mirrorPairs = 0;
+            break;
+          case "single":
+            usableDisks = disks - 1;
+            mirrorPairs = 0;
+            break;
+          case "double":
+            usableDisks = disks - 2;
+            mirrorPairs = 0;
+            break;
+          case "triple":
+            usableDisks = disks - 3;
+            mirrorPairs = 0;
+            break;
+          case "mirror":
+            if (disks % 2 !== 0) {
+              errorMessage = "Mirror pairs require an even number of disks";
+            } else {
+              mirrorPairs = disks / 2;
+              usableDisks = mirrorPairs;
+            }
+            break;
+        }
+
+        // Check for valid usable disks
+        if (usableDisks < 1) {
+          errorMessage = `Not enough disks for ${redundancy} redundancy`;
+        }
+
+        if (errorMessage) {
+          document.getElementById("error").textContent = errorMessage;
+          document.getElementById("error").style.display = "block";
+          document.getElementById("results").style.display = "none";
+          return;
+        }
+
+        const totalRawCapacity = usableDisks * diskSize;
+        const effectiveCapacity = totalRawCapacity * effectiveCapacityPct;
+        const maxCapacity = effectiveCapacity * (recordSize / 128);
+
+        document.getElementById("error").style.display = "none";
+        document.getElementById("results").style.display = "block";
+        document.getElementById("usableCapacity").textContent = `${
+          Math.round(totalRawCapacity * 100) / 100
+        } GB`;
+        document.getElementById("effectiveCapacity").textContent = `${
+          Math.round(effectiveCapacity * 100) / 100
+        } GB`;
+        document.getElementById("maxCapacity").textContent = `${
+          Math.round(maxCapacity * 100) / 100
+        } GB`;
+        document.getElementById("mirrorPairs").textContent = mirrorPairs;
+      }
+
+      // Add event listeners for real-time updates
+      document.getElementById("disks").addEventListener("input", calculate);
+      document.getElementById("diskSize").addEventListener("input", calculate);
+      document
+        .getElementById("faultTolerance")
+        .addEventListener("change", calculate);
+      document
+        .getElementById("recordSize")
+        .addEventListener("input", calculate);
+      document
+        .getElementById("effectiveCapacityPct")
+        .addEventListener("input", calculate);
+
+      // Initial calculation
+      calculate();
+    </script>
+  </body>
+</html>
