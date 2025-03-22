@@ -63,19 +63,6 @@
             </select>
           </div>
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700"
-              >Record Size (KB)</label
-            >
-            <input
-              type="number"
-              id="recordSize"
-              min="1"
-              max="128"
-              value="128"
-              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
               Effective Capacity (%)
             </label>
@@ -125,19 +112,19 @@
           <div class="bg-gray-50 p-4 rounded-md">
             <div class="flex justify-between items-center">
               <div class="flex items-center">
-                <i class="fas fa-database mr-2 text-blue-500"></i>
-                <span class="font-medium text-gray-700">Max Capacity:</span>
-              </div>
-              <span class="text-lg font-bold" id="maxCapacity">-</span>
-            </div>
-          </div>
-          <div class="bg-gray-50 p-4 rounded-md">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
                 <i class="fas fa-sync mr-2 text-blue-500"></i>
                 <span class="font-medium text-gray-700">Mirror Pairs:</span>
               </div>
               <span class="text-lg font-bold" id="mirrorPairs">-</span>
+            </div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex items-start">
+              <i class="fas fa-shield-alt mt-1 mr-2 text-blue-500"></i>
+              <div>
+                <span class="font-medium text-gray-700">Fault Tolerance:</span>
+                <p class="mt-1 text-gray-600" id="faultToleranceExplanation">-</p>
+              </div>
             </div>
           </div>
         </div>
@@ -182,29 +169,34 @@
     </div>
 
     <script>
-      function isPowerOfTwo(n) {
-        return (n & (n - 1)) === 0 && n !== 0;
+      function getFaultToleranceExplanation(redundancy, disks) {
+        switch (redundancy) {
+          case "none":
+            return "No fault tolerance. If any disk fails, all data is lost.";
+          case "single":
+            return "Can survive the failure of <strong>1</strong> disk. If more than <strong>1</strong> disk fails, data will be lost.";
+          case "double":
+            return "Can survive the failure of up to <strong>2</strong> disks. If more than <strong>2</strong> disks fail, data will be lost.";
+          case "triple":
+            return "Can survive the failure of up to <strong>3</strong> disks. If more than <strong>3</strong> disks fail, data will be lost.";
+          case "mirror":
+            const pairs = Math.floor(disks / 2);
+            return `Can survive the failure of <strong>1</strong> disk in each mirror pair. Up to <strong>${pairs}</strong> disk failures can be tolerated if they occur in different mirror pairs.`;
+          default:
+            return "Fault tolerance information not available.";
+        }
       }
 
       function calculate() {
         const disks = parseInt(document.getElementById("disks").value);
         const diskSize = parseInt(document.getElementById("diskSize").value);
         const redundancy = document.getElementById("faultTolerance").value;
-        const recordSize = parseInt(
-          document.getElementById("recordSize").value
-        );
         const effectiveCapacityPct =
           parseInt(document.getElementById("effectiveCapacityPct").value) / 100;
 
         let usableDisks;
         let mirrorPairs = 0;
         let errorMessage = "";
-
-        // Check for invalid record size
-        if (!isPowerOfTwo(recordSize)) {
-          errorMessage =
-            "Record size must be a power of 2 (e.g., 4, 8, 16, 32, 64, 128)";
-        }
 
         // Check for valid disk size
         if (diskSize < 1) {
@@ -264,7 +256,6 @@
 
         const totalRawCapacity = usableDisks * diskSize;
         const effectiveCapacity = totalRawCapacity * effectiveCapacityPct;
-        const maxCapacity = effectiveCapacity * (recordSize / 128);
 
         document.getElementById("error").style.display = "none";
         document.getElementById("results").style.display = "block";
@@ -274,10 +265,9 @@
         document.getElementById("effectiveCapacity").textContent = `${
           Math.round(effectiveCapacity * 100) / 100
         } GB`;
-        document.getElementById("maxCapacity").textContent = `${
-          Math.round(maxCapacity * 100) / 100
-        } GB`;
         document.getElementById("mirrorPairs").textContent = mirrorPairs;
+        document.getElementById("faultToleranceExplanation").innerHTML = 
+          getFaultToleranceExplanation(redundancy, disks);
       }
 
       // Add event listeners for real-time updates
@@ -286,9 +276,6 @@
       document
         .getElementById("faultTolerance")
         .addEventListener("change", calculate);
-      document
-        .getElementById("recordSize")
-        .addEventListener("input", calculate);
       document
         .getElementById("effectiveCapacityPct")
         .addEventListener("input", calculate);
