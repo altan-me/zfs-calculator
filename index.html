@@ -3,12 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZFS Storage Calculator</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>ZFS Storage Calculator | Calculate RAID Storage Capacity</title>
+    <meta name="description" content="Free ZFS Storage Calculator to determine usable capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror). Plan your storage effectively." />
+    <meta name="keywords" content="ZFS, storage calculator, RAID calculator, RAIDZ, ZFS pool, data redundancy, usable capacity, mirror pairs" />
+    <meta name="author" content="Your Name or Organization" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://zfs-calculator.com" />
+    
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://zfs-calculator.com" />
+    <meta property="og:title" content="ZFS Storage Calculator | Calculate RAID Storage Capacity" />
+    <meta property="og:description" content="Free ZFS Storage Calculator to determine usable capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror). Plan your storage effectively." />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://zfs-calculator.com" />
+    <meta name="twitter:title" content="ZFS Storage Calculator | Calculate RAID Storage Capacity" />
+    <meta name="twitter:description" content="Free ZFS Storage Calculator to determine usable capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror). Plan your storage effectively." />
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
+    
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ZFS Storage Calculator",
+        "description": "Calculate usable and effective capacity for ZFS storage pools with different redundancy levels.",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Web Browser",
+        "author": {
+          "@type": "Organization",
+          "name": "altan.me",
+          "url": "https://zfs-calculator.com"
+        }
+      }
+    </script>
   </head>
   <body class="bg-gray-900 p-4">
     <div class="max-w-2xl mx-auto">
@@ -33,6 +76,7 @@
               min="1"
               value="4"
               class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              aria-label="Number of disks in the ZFS pool"
             />
           </div>
           <div class="space-y-2">
@@ -45,6 +89,7 @@
               min="1"
               value="4000"
               class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              aria-label="Size of each disk in gigabytes"
             />
           </div>
           <div class="space-y-2">
@@ -54,6 +99,7 @@
             <select
               id="faultTolerance"
               class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              aria-label="Select ZFS redundancy level"
             >
               <option value="none">None (striped)</option>
               <option value="single">Single Parity (raidz1)</option>
@@ -73,6 +119,7 @@
               max="100"
               value="80"
               class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              aria-label="Effective capacity percentage"
             />
           </div>
         </div>
@@ -92,7 +139,7 @@
           <div class="bg-gray-700 p-4 rounded-md">
             <div class="flex justify-between items-center">
               <div class="flex items-center">
-                <i class="fas fa-hdd mr-2 text-cyan-400"></i>
+                <i class="fas fa-hdd mr-2 text-cyan-400" aria-hidden="true"></i>
                 <span class="font-medium text-gray-200">Usable Capacity:</span>
               </div>
               <span class="text-lg font-bold text-gray-100" id="usableCapacity">-</span>
@@ -101,7 +148,7 @@
           <div class="bg-gray-700 p-4 rounded-md">
             <div class="flex justify-between items-center">
               <div class="flex items-center">
-                <i class="fas fa-chart-line mr-2 text-cyan-400"></i>
+                <i class="fas fa-chart-line mr-2 text-cyan-400" aria-hidden="true"></i>
                 <span class="font-medium text-gray-200"
                   >Effective Capacity:</span
                 >
@@ -112,7 +159,7 @@
           <div class="bg-gray-700 p-4 rounded-md">
             <div class="flex justify-between items-center">
               <div class="flex items-center">
-                <i class="fas fa-sync mr-2 text-cyan-400"></i>
+                <i class="fas fa-sync mr-2 text-cyan-400" aria-hidden="true"></i>
                 <span class="font-medium text-gray-200">Mirror Pairs:</span>
               </div>
               <span class="text-lg font-bold text-gray-100" id="mirrorPairs">-</span>
@@ -120,7 +167,7 @@
           </div>
           <div class="bg-gray-700 p-4 rounded-md">
             <div class="flex items-start">
-              <i class="fas fa-shield-alt mt-1 mr-2 text-cyan-400"></i>
+              <i class="fas fa-shield-alt mt-1 mr-2 text-cyan-400" aria-hidden="true"></i>
               <div>
                 <span class="font-medium text-gray-200">Fault Tolerance:</span>
                 <p class="mt-1 text-gray-300" id="faultToleranceExplanation">-</p>
@@ -166,9 +213,18 @@
           based on your specific needs.
         </p>
       </div>
+      
+      <footer class="mt-8 text-center text-sm text-gray-400">
+        <p>© altan.me All rights reserved.</p>
+        <p class="mt-2">
+          ZFS Storage Calculator helps you plan your ZFS storage pools and calculate usable capacity with different redundancy levels.
+        </p>
+      </footer>
     </div>
 
     <script>
+      document.querySelector("footer p:first-child").innerHTML = `© ${new Date().getFullYear()} altan.me. All rights reserved.`;
+
       function getFaultToleranceExplanation(redundancy, disks) {
         switch (redundancy) {
           case "none":
