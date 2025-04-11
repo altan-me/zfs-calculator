@@ -54,6 +54,18 @@
           }
         }
       </script>
+  <style>
+    /* Ensure the TB/GB buttons match the height of the disk size input */
+    .unit-button {
+      height: calc(100% - 2px); /* Adjust for border width */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flex.items-center.space-x-2 {
+      align-items: stretch; /* Ensure all children have the same height */
+    }
+  </style>
 </head>
 
 <!-- Updated styling to follow TikTok's design language -->
