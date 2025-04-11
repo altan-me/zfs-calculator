@@ -41,20 +41,20 @@
 
   <!-- Structured Data / JSON-LD -->
   <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "ZFS Storage Calculator",
-        "description": "Calculate usable and effective capacity for ZFS storage pools with different redundancy levels, accounting for ZFS overhead.",
-        "applicationCategory": "UtilityApplication",
-        "operatingSystem": "Web Browser",
-        "author": {
-          "@type": "Organization",
-          "name": "altan.me",
-          "url": "https://zfs-calculator.com"
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "ZFS Storage Calculator",
+          "description": "Calculate usable and effective capacity for ZFS storage pools with different redundancy levels, accounting for ZFS overhead.",
+          "applicationCategory": "UtilityApplication",
+          "operatingSystem": "Web Browser",
+          "author": {
+            "@type": "Organization",
+            "name": "altan.me",
+            "url": "https://zfs-calculator.com"
+          }
         }
-      }
-    </script>
+      </script>
 </head>
 
 <body class="bg-gray-900 p-4">
@@ -72,10 +72,12 @@
             aria-label="Number of disks in the ZFS pool" />
         </div>
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-200">Disk Size (GB)</label>
-          <input type="number" id="diskSize" min="1" value="4000"
+          <label class="block text-sm font-medium text-gray-200">Disk Size (TB)</label>
+          <!-- Changed Label to TB -->
+          <input type="number" id="diskSize" min="1" value="4"
             class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            aria-label="Size of each disk in gigabytes (1 GB = 1,000,000,000 bytes)" />
+            aria-label="Size of each disk in terabytes (1 TB = 1,000,000,000,000 bytes)" />
+          <!-- Changed default value and aria-label -->
         </div>
         <div class="space-y-2 md:col-span-2">
           <!-- Made Redundancy Level span full width for better layout -->
@@ -266,7 +268,9 @@
       // Calculate total overhead
       const totalOverheadBytes = totalRawCapacityBytes - poolUsableSpaceBytes;
       const overheadPercentage =
-        (totalOverheadBytes / totalRawCapacityBytes) * 100;
+        totalRawCapacityBytes > 0
+          ? (totalOverheadBytes / totalRawCapacityBytes) * 100
+          : 0; // Avoid division by zero
 
       // Ensure usable space isn't negative in weird edge cases
       const finalPoolUsableSpaceBytes = Math.max(0, poolUsableSpaceBytes);
@@ -305,20 +309,20 @@
 
     function calculate() {
       const disks = parseInt(document.getElementById("disks").value);
-      const diskSizeGB = parseInt(document.getElementById("diskSize").value); // Input is in GB
+      const diskSizeTB = parseInt(document.getElementById("diskSize").value); // Input is in TB
       const redundancy = document.getElementById("faultTolerance").value;
 
-      // Define GB in bytes (using 1000^3 for consistency with drive marketing)
-      const GB_IN_BYTES = 1000 * 1000 * 1000;
-      const diskSizeBytes = diskSizeGB * GB_IN_BYTES;
+      // Define TB in bytes (using 1000^4 for consistency with drive marketing)
+      const TB_IN_BYTES = 1000 * 1000 * 1000 * 1000;
+      const diskSizeBytes = diskSizeTB * TB_IN_BYTES;
 
       let usableDisks;
       let mirrorPairs = 0;
       let errorMessage = "";
 
       // Check for valid disk size
-      if (isNaN(diskSizeGB) || diskSizeGB < 1) {
-        errorMessage = "Disk size must be at least 1 GB";
+      if (isNaN(diskSizeTB) || diskSizeTB < 1) {
+        errorMessage = "Disk size must be at least 1 TB"; // Updated error message
       }
 
       // Check for valid number of disks
@@ -386,15 +390,16 @@
       // 1. Calculate ZFS overhead based on *total* raw capacity
       const zfsOverheadResult = calculateZFSOverhead(disks, diskSizeBytes);
 
-      // 2. Calculate "Usable Capacity (Pre-Overhead)" - This is capacity after redundancy only
-      const usableCapacityGB = usableDisks * diskSizeGB;
+      // 2. Calculate "Usable Capacity (Pre-Overhead)" - This is capacity after redundancy only, now in TB
+      const usableCapacityTB = usableDisks * diskSizeTB; // Result is in TB
 
       // 3. Calculate "Effective Capacity (Actual)"
       // Apply the data disk proportion to the pool space available *after* ZFS overhead
       const dataDiskProportion = usableDisks / disks;
       const effectiveCapacityBytes =
         zfsOverheadResult.usableSpaceBytes * dataDiskProportion;
-      const effectiveCapacityGB = effectiveCapacityBytes / GB_IN_BYTES;
+      // Convert bytes to TB for display
+      const effectiveCapacityTB = effectiveCapacityBytes / TB_IN_BYTES;
 
       // --- Update Display ---
       document.getElementById("error").style.display = "none";
@@ -402,10 +407,10 @@
 
       document.getElementById(
         "usableCapacity"
-      ).textContent = `${usableCapacityGB.toFixed(2)} GB`;
+      ).textContent = `${usableCapacityTB.toFixed(2)} TB`; // Display in TB
       document.getElementById(
         "effectiveCapacity"
-      ).textContent = `${effectiveCapacityGB.toFixed(2)} GB`;
+      ).textContent = `${effectiveCapacityTB.toFixed(2)} TB`; // Display in TB
       document.getElementById(
         "zfsOverheadPercentage"
       ).textContent = `${zfsOverheadResult.overheadPercentage.toFixed(2)} %`;
