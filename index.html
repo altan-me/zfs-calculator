@@ -210,20 +210,24 @@
       </ul>
     </div>
 
-    <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-4">
-      <h3 class="font-medium text-gray-100 mb-2">
-        What is Effective Capacity?
-      </h3>
-      <p class="text-gray-300">
-        Effective capacity represents the actual disk space available for
-        storing your data after accounting for both the chosen redundancy
-        level (like RAIDZ parity or mirroring) and ZFS's internal overhead.
-        This overhead includes space reserved for metadata, checksums, ZIL
-        (ZFS Intent Log), slop space (to prevent fragmentation issues at high
-        capacity), and partitioning/alignment. This calculator estimates the
-        overhead to provide a more realistic figure than simply subtracting
-        parity disks. Results are typically shown in Terabytes (TB).
-      </p>
+    <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6">
+      <h3 class="font-medium text-gray-100 text-lg mb-4">What is Effective Capacity?</h3>
+      <div class="space-y-4">
+        <p class="text-gray-300 leading-relaxed">
+          Effective capacity represents the actual disk space available for storing your data after accounting for both the chosen redundancy level (like RAIDZ parity or mirroring) and ZFS's internal overhead.
+        </p>
+        <ul class="list-disc pl-5 space-y-2 text-gray-300">
+          <li>
+            <strong>Redundancy Level:</strong> Space reserved for parity or mirroring to ensure data protection.
+          </li>
+          <li>
+            <strong>ZFS Overhead:</strong> Includes metadata, checksums, ZIL (ZFS Intent Log), slop space, and partitioning/alignment.
+          </li>
+        </ul>
+        <p class="text-gray-300 leading-relaxed">
+          This calculator estimates the overhead to provide a more realistic figure than simply subtracting parity disks. Results are typically shown in Terabytes (TB).
+        </p>
+      </div>
     </div>
 
     <footer class="mt-8 text-center text-sm text-gray-500">
