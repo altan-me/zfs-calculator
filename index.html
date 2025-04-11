@@ -10,7 +10,7 @@
   <meta name="description"
     content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead." />
   <meta name="keywords"
-    content="ZFS, storage calculator, RAID calculator, RAIDZ, ZFS pool, data redundancy, usable capacity, effective capacity, ZFS overhead, mirror pairs" />
+    content="ZFS, storage calculator, RAID calculator, RAIDZ, ZFS pool, data redundancy, usable capacity, effective capacity, ZFS overhead, mirror pairs, TB, GB" />
   <meta name="author" content="Your Name or Organization" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://zfs-calculator.com" />
@@ -72,15 +72,27 @@
             aria-label="Number of disks in the ZFS pool" />
         </div>
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-200">Disk Size (TB)</label>
-          <!-- Changed Label to TB -->
-          <input type="number" id="diskSize" min="1" value="4"
-            class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            aria-label="Size of each disk in terabytes (1 TB = 1,000,000,000,000 bytes)" />
-          <!-- Changed default value and aria-label -->
+          <label class="block text-sm font-medium text-gray-200">Disk Size</label>
+          <div class="flex items-center space-x-2">
+            <input type="number" id="diskSize" min="1" value="4"
+              class="flex-grow p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              aria-label="Size of each disk" />
+            <!-- Button Group for Units -->
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+              <button type="button"
+                class="unit-button px-3 py-2 text-sm font-medium border border-gray-600 rounded-l-lg focus:z-10 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                data-unit="TB" aria-label="Select Terabytes">
+                TB
+              </button>
+              <button type="button"
+                class="unit-button px-3 py-2 text-sm font-medium border-t border-b border-r border-gray-600 rounded-r-lg focus:z-10 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                data-unit="GB" aria-label="Select Gigabytes">
+                GB
+              </button>
+            </div>
+          </div>
         </div>
         <div class="space-y-2 md:col-span-2">
-          <!-- Made Redundancy Level span full width for better layout -->
           <label class="block text-sm font-medium text-gray-200">Redundancy Level</label>
           <select id="faultTolerance"
             class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -92,7 +104,6 @@
             <option value="mirror" selected>Mirror Pairs</option>
           </select>
         </div>
-        <!-- Removed Effective Capacity Percentage Input -->
       </div>
     </div>
 
@@ -112,7 +123,7 @@
             <span class="text-lg font-bold text-gray-100" id="usableCapacity">-</span>
           </div>
           <p class="text-xs text-gray-400 mt-1">
-            Capacity after redundancy, before ZFS overhead.
+            Capacity after redundancy, before ZFS overhead. Displayed in TB.
           </p>
         </div>
         <div class="bg-gray-700 p-4 rounded-md">
@@ -125,6 +136,7 @@
           </div>
           <p class="text-xs text-gray-400 mt-1">
             Actual data storage space after redundancy and ZFS overhead.
+            Displayed in TB.
           </p>
         </div>
         <div class="bg-gray-700 p-4 rounded-md">
@@ -199,7 +211,7 @@
         (ZFS Intent Log), slop space (to prevent fragmentation issues at high
         capacity), and partitioning/alignment. This calculator estimates the
         overhead to provide a more realistic figure than simply subtracting
-        parity disks.
+        parity disks. Results are typically shown in Terabytes (TB).
       </p>
     </div>
 
@@ -216,6 +228,21 @@
     document.querySelector(
       "footer p:first-child"
     ).innerHTML = `© ${new Date().getFullYear()} altan.me. All rights reserved.`;
+
+    // Define byte constants globally
+    const GB_IN_BYTES = 1000 * 1000 * 1000;
+    const TB_IN_BYTES = 1000 * GB_IN_BYTES;
+
+    // State variable for selected unit
+    let selectedUnit = "TB"; // Default to TB
+
+    // Button styling classes
+    const activeClasses = ["bg-cyan-500", "text-gray-900"];
+    const inactiveClasses = [
+      "bg-gray-700",
+      "text-gray-200",
+      "hover:bg-gray-600",
+    ];
 
     /**
      * Calculates ZFS overhead and usable space for a given number of drives and drive size
@@ -247,9 +274,6 @@
       const totalPerDiskOverhead = perDiskOverhead * driveCount;
 
       // Calculate metaslab allocation loss (Highly approximate)
-      // Actual metaslab size depends on pool size and ashift.
-      // Using a small percentage as a rough estimate.
-      // A fixed size might be better but varies greatly. Let's use 0.5% of capacity *before* slop.
       const capacityBeforeMetaslabLoss =
         totalRawCapacityBytes - totalPerDiskOverhead;
       const metaslabLoss = capacityBeforeMetaslabLoss * 0.005; // Simplified 0.5% estimate
@@ -284,7 +308,7 @@
         },
         totalOverheadBytes: totalOverheadBytes,
         overheadPercentage: overheadPercentage,
-        usableSpaceBytes: finalPoolUsableSpaceBytes, // Renamed for clarity
+        usableSpaceBytes: finalPoolUsableSpaceBytes,
         usablePercentage: 100 - overheadPercentage,
       };
     }
@@ -307,22 +331,41 @@
       }
     }
 
+    function updateDiskSizeAriaLabel() {
+      const diskSizeInputEl = document.getElementById("diskSize");
+      // Use the selectedUnit state variable
+      const unitText = selectedUnit === "TB" ? "terabytes" : "gigabytes";
+      const baseBytes =
+        selectedUnit === "TB" ? "1,000,000,000,000" : "1,000,000,000";
+      diskSizeInputEl.setAttribute(
+        "aria-label",
+        `Size of each disk in ${unitText} (1 ${selectedUnit} = ${baseBytes} bytes)`
+      );
+    }
+
     function calculate() {
       const disks = parseInt(document.getElementById("disks").value);
-      const diskSizeTB = parseInt(document.getElementById("diskSize").value); // Input is in TB
+      const diskSizeInput = parseInt(
+        document.getElementById("diskSize").value
+      );
+      // Unit comes from the selectedUnit state variable
       const redundancy = document.getElementById("faultTolerance").value;
 
-      // Define TB in bytes (using 1000^4 for consistency with drive marketing)
-      const TB_IN_BYTES = 1000 * 1000 * 1000 * 1000;
-      const diskSizeBytes = diskSizeTB * TB_IN_BYTES;
-
-      let usableDisks;
-      let mirrorPairs = 0;
+      let diskSizeBytes;
       let errorMessage = "";
 
-      // Check for valid disk size
-      if (isNaN(diskSizeTB) || diskSizeTB < 1) {
-        errorMessage = "Disk size must be at least 1 TB"; // Updated error message
+      // Convert input size to bytes based on selected unit
+      if (selectedUnit === "TB") {
+        diskSizeBytes = diskSizeInput * TB_IN_BYTES;
+      } else if (selectedUnit === "GB") {
+        diskSizeBytes = diskSizeInput * GB_IN_BYTES;
+      } else {
+        errorMessage = "Invalid disk size unit selected."; // Should not happen
+      }
+
+      // Check for valid disk size input
+      if (!errorMessage && (isNaN(diskSizeInput) || diskSizeInput < 1)) {
+        errorMessage = `Disk size must be at least 1 ${selectedUnit}`; // Use state variable
       }
 
       // Check for valid number of disks
@@ -332,10 +375,13 @@
 
       if (errorMessage) {
         document.getElementById("error").textContent = errorMessage;
-        document.getElementById("error").style.display = "flex"; // Use flex for alignment
+        document.getElementById("error").style.display = "flex";
         document.getElementById("results").style.display = "none";
         return;
       }
+
+      let usableDisks;
+      let mirrorPairs = 0;
 
       switch (redundancy) {
         case "none":
@@ -390,15 +436,14 @@
       // 1. Calculate ZFS overhead based on *total* raw capacity
       const zfsOverheadResult = calculateZFSOverhead(disks, diskSizeBytes);
 
-      // 2. Calculate "Usable Capacity (Pre-Overhead)" - This is capacity after redundancy only, now in TB
-      const usableCapacityTB = usableDisks * diskSizeTB; // Result is in TB
+      // 2. Calculate "Usable Capacity (Pre-Overhead)" - Capacity after redundancy only
+      const usableCapacityBytes = usableDisks * diskSizeBytes;
+      const usableCapacityTB = usableCapacityBytes / TB_IN_BYTES;
 
       // 3. Calculate "Effective Capacity (Actual)"
-      // Apply the data disk proportion to the pool space available *after* ZFS overhead
-      const dataDiskProportion = usableDisks / disks;
+      const dataDiskProportion = disks > 0 ? usableDisks / disks : 0;
       const effectiveCapacityBytes =
         zfsOverheadResult.usableSpaceBytes * dataDiskProportion;
-      // Convert bytes to TB for display
       const effectiveCapacityTB = effectiveCapacityBytes / TB_IN_BYTES;
 
       // --- Update Display ---
@@ -407,19 +452,18 @@
 
       document.getElementById(
         "usableCapacity"
-      ).textContent = `${usableCapacityTB.toFixed(2)} TB`; // Display in TB
+      ).textContent = `${usableCapacityTB.toFixed(2)} TB`;
       document.getElementById(
         "effectiveCapacity"
-      ).textContent = `${effectiveCapacityTB.toFixed(2)} TB`; // Display in TB
+      ).textContent = `${effectiveCapacityTB.toFixed(2)} TB`;
       document.getElementById(
         "zfsOverheadPercentage"
       ).textContent = `${zfsOverheadResult.overheadPercentage.toFixed(2)} %`;
       document.getElementById("mirrorPairs").textContent =
-        mirrorPairs > 0 ? mirrorPairs : "-"; // Show '-' if not mirror
+        mirrorPairs > 0 ? mirrorPairs : "-";
       document.getElementById("faultToleranceExplanation").innerHTML =
         getFaultToleranceExplanation(redundancy, disks);
 
-      // Hide/Show Mirror Pairs row based on redundancy
       const mirrorPairsRow = document
         .getElementById("mirrorPairs")
         .closest(".bg-gray-700");
@@ -430,16 +474,49 @@
       }
     }
 
-    // Add event listeners for real-time updates
+    // --- Event Listeners ---
     document.getElementById("disks").addEventListener("input", calculate);
     document.getElementById("diskSize").addEventListener("input", calculate);
     document
       .getElementById("faultTolerance")
       .addEventListener("change", calculate);
-    // Removed listener for effectiveCapacityPct
 
-    // Initial calculation
-    calculate();
+    // Unit Button Group Listener
+    const unitButtons = document.querySelectorAll(".unit-button");
+    unitButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const newUnit = button.getAttribute("data-unit");
+        if (newUnit !== selectedUnit) {
+          selectedUnit = newUnit; // Update state
+
+          // Update styles
+          unitButtons.forEach((btn) => {
+            btn.classList.remove(...activeClasses);
+            btn.classList.add(...inactiveClasses);
+          });
+          button.classList.add(...activeClasses);
+          button.classList.remove(...inactiveClasses);
+
+          updateDiskSizeAriaLabel(); // Update input label
+          calculate(); // Recalculate
+        }
+      });
+    });
+
+    // --- Initial Setup ---
+    // Set initial button styles based on default selectedUnit
+    unitButtons.forEach((button) => {
+      const unit = button.getAttribute("data-unit");
+      if (unit === selectedUnit) {
+        button.classList.add(...activeClasses);
+        button.classList.remove(...inactiveClasses);
+      } else {
+        button.classList.add(...inactiveClasses);
+        button.classList.remove(...activeClasses);
+      }
+    });
+    updateDiskSizeAriaLabel(); // Set initial aria-label
+    calculate(); // Initial calculation
   </script>
 </body>
 
