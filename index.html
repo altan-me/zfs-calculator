@@ -186,28 +186,30 @@
       </div>
     </div>
 
-    <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-4">
-      <h3 class="font-medium text-gray-100 mb-2">Redundancy Levels</h3>
-      <ul class="list-disc pl-5 space-y-2 text-gray-300">
-        <li>
-          None (striped): Data is striped across all disks with no redundancy.
-        </li>
-        <li>
-          Single Parity (raidz1): Data is striped across disks with single
-          parity for fault tolerance.
-        </li>
-        <li>
-          Double Parity (raidz2): Data is striped across disks with double
-          parity for fault tolerance.
-        </li>
-        <li>
-          Triple Parity (raidz3): Data is striped across disks with triple
-          parity for maximum fault tolerance.
-        </li>
-        <li>
-          Mirror Pairs: Data is mirrored across pairs of disks for redundancy.
-        </li>
-      </ul>
+    <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6">
+      <h3 class="font-medium text-gray-100 text-lg mb-4">Redundancy Levels Explained</h3>
+      <div class="space-y-4">
+        <p class="text-gray-300 leading-relaxed">
+          Redundancy levels determine how your data is protected against disk failures. Each level offers a different balance of usable capacity and fault tolerance.
+        </p>
+        <ul class="list-disc pl-5 space-y-2 text-gray-300">
+          <li>
+            <strong>None (striped):</strong> Data is striped across all disks with no redundancy. If any disk fails, all data is lost.
+          </li>
+          <li>
+            <strong>Single Parity (RAIDZ1):</strong> Data is striped across disks with single parity for fault tolerance. Can survive the failure of <strong>1</strong> disk.
+          </li>
+          <li>
+            <strong>Double Parity (RAIDZ2):</strong> Data is striped across disks with double parity for fault tolerance. Can survive the failure of up to <strong>2</strong> disks.
+          </li>
+          <li>
+            <strong>Triple Parity (RAIDZ3):</strong> Data is striped across disks with triple parity for maximum fault tolerance. Can survive the failure of up to <strong>3</strong> disks.
+          </li>
+          <li>
+            <strong>Mirror Pairs:</strong> Data is mirrored across pairs of disks for redundancy. Can survive the failure of <strong>1</strong> disk in each mirror pair.
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6">
