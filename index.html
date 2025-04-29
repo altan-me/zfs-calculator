@@ -65,11 +65,20 @@
     .flex.items-center.space-x-2 {
       align-items: stretch; /* Ensure all children have the same height */
     }
+    @media (max-width: 400px) {
+      .flex.items-center.space-x-2 {
+        flex-wrap: nowrap; /* Prevent wrapping */
+      }
+      #diskSize {
+        flex-shrink: 1; /* Allow the input to shrink */
+        min-width: 50%; /* Set a minimum width to prevent it from becoming too small */
+      }
+    }
   </style>
 </head>
 
 <!-- Updated styling to follow TikTok's design language -->
-<body class="bg-black text-white p-4">
+<body class="bg-gray-900 text-white p-4">
   <div class="max-w-2xl mx-auto">
     <h1 class="mb-4 text-4xl font-extrabold text-white md:text-5xl lg:text-5xl mb-6 text-center">
       <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">ZFS</span>
@@ -358,7 +367,7 @@
 
     function calculate() {
       const disks = parseInt(document.getElementById("disks").value);
-      const diskSizeInput = parseInt(
+      const diskSizeInput = parseFloat(
         document.getElementById("diskSize").value
       );
       // Unit comes from the selectedUnit state variable
@@ -377,8 +386,8 @@
       }
 
       // Check for valid disk size input
-      if (!errorMessage && (isNaN(diskSizeInput) || diskSizeInput < 1)) {
-        errorMessage = `Disk size must be at least 1 ${selectedUnit}`; // Use state variable
+      if (!errorMessage && (isNaN(diskSizeInput) || diskSizeInput <= 0)) {
+        errorMessage = `Disk size must be greater than 0 ${selectedUnit}`; // Use state variable
       }
 
       // Check for valid number of disks
