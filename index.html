@@ -469,30 +469,30 @@
       const effectiveCapacityTB = effectiveCapacityBytes / TB_IN_BYTES;
 
       // --- Update Display ---
-      document.getElementById("error").style.display = "none";
-      document.getElementById("results").style.display = "block";
+      const errorElement = document.getElementById("error");
+      const resultsElement = document.getElementById("results");
 
-      document.getElementById(
-        "usableCapacity"
-      ).textContent = `${usableCapacityTB.toFixed(2)} TB`;
-      document.getElementById(
-        "effectiveCapacity"
-      ).textContent = `${effectiveCapacityTB.toFixed(2)} TB`;
-      document.getElementById(
-        "zfsOverheadPercentage"
-      ).textContent = `${zfsOverheadResult.overheadPercentage.toFixed(2)} %`;
-      document.getElementById("mirrorPairs").textContent =
-        mirrorPairs > 0 ? mirrorPairs : "-";
-      document.getElementById("faultToleranceExplanation").innerHTML =
-        getFaultToleranceExplanation(redundancy, disks);
+      if (errorElement) {
+        errorElement.style.display = "none";
+      }
 
-      const mirrorPairsRow = document
-        .getElementById("mirrorPairs")
-        .closest(".bg-neutral-700");
-      if (redundancy === "mirror") {
-        mirrorPairsRow.style.display = "block";
-      } else {
-        mirrorPairsRow.style.display = "none";
+      if (resultsElement) {
+        resultsElement.style.display = "block";
+      }
+
+      document.getElementById("usableCapacity").textContent = `${usableCapacityTB.toFixed(2)} TB`;
+      document.getElementById("effectiveCapacity").textContent = `${effectiveCapacityTB.toFixed(2)} TB`;
+      document.getElementById("zfsOverheadPercentage").textContent = `${zfsOverheadResult.overheadPercentage.toFixed(2)} %`;
+      document.getElementById("mirrorPairs").textContent = mirrorPairs > 0 ? mirrorPairs : "-";
+      document.getElementById("faultToleranceExplanation").innerHTML = getFaultToleranceExplanation(redundancy, disks);
+
+      const mirrorPairsRow = document.getElementById("mirrorPairs")?.closest(".bg-neutral-700");
+      if (mirrorPairsRow) {
+        if (redundancy === "mirror") {
+          mirrorPairsRow.style.display = "block";
+        } else {
+          mirrorPairsRow.style.display = "none";
+        }
       }
     }
 
