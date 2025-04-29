@@ -78,34 +78,34 @@
 </head>
 
 <!-- Updated styling to follow TikTok's design language -->
-<body class="bg-gray-900 text-white p-4">
+<body class="bg-neutral-950 text-white p-4">
   <div class="max-w-2xl mx-auto">
     <h1 class="mb-4 text-4xl font-extrabold text-white md:text-5xl lg:text-5xl mb-6 text-center">
       <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">ZFS</span>
       Storage Calculator
     </h1>
-    <div class="bg-gray-900 rounded-lg shadow-lg p-6 mb-6">
+    <div class="bg-neutral-900 rounded-lg shadow-lg p-6 mb-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-400">Number of Disks</label>
+          <label class="block text-sm font-medium text-neutral-400">Number of Disks</label>
           <input type="number" id="disks" min="1" value="4"
-            class="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+            class="w-full p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
             aria-label="Number of disks in the ZFS pool" />
         </div>
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-400">Disk Size</label>
+          <label class="block text-sm font-medium text-neutral-400">Disk Size</label>
           <div class="flex items-center space-x-2">
             <input type="number" id="diskSize" min="1" value="4"
-              class="flex-grow p-3 border border-gray-700 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              class="flex-grow p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               aria-label="Size of each disk" />
             <div class="inline-flex rounded-md shadow-sm" role="group">
               <button type="button"
-                class="unit-button px-4 py-2 text-sm font-medium border border-gray-700 bg-gray-800 text-white rounded-l-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-gray-700"
+                class="unit-button px-4 py-2 text-sm font-medium border border-neutral-700 bg-neutral-800 text-white rounded-l-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-neutral-700"
                 data-unit="TB" aria-label="Select Terabytes">
                 TB
               </button>
               <button type="button"
-                class="unit-button px-4 py-2 text-sm font-medium border-t border-b border-r border-gray-700 bg-gray-800 text-white rounded-r-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-gray-700"
+                class="unit-button px-4 py-2 text-sm font-medium border-t border-b border-r border-neutral-700 bg-neutral-800 text-white rounded-r-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-neutral-700"
                 data-unit="GB" aria-label="Select Gigabytes">
                 GB
               </button>
@@ -113,9 +113,9 @@
           </div>
         </div>
         <div class="space-y-2 md:col-span-2">
-          <label class="block text-sm font-medium text-gray-400">Redundancy Level</label>
+          <label class="block text-sm font-medium text-neutral-400">Redundancy Level</label>
           <select id="faultTolerance"
-            class="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+            class="w-full p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
             aria-label="Select ZFS redundancy level">
             <option value="none">None (striped)</option>
             <option value="single">Single Parity (raidz1)</option>
@@ -130,63 +130,63 @@
     <div id="error" class="flex items-center p-4 mb-4 text-sm font-medium text-red-400 rounded-lg bg-red-800"
       role="alert" style="display: none"></div>
 
-    <div class="bg-gray-900 rounded-lg shadow-lg p-6" id="results">
+    <div class="bg-neutral-900 rounded-lg shadow-lg p-6" id="results">
       <div id="error" class="error" style="display: none"></div>
       <h2 class="text-xl font-semibold text-white mb-4">Results</h2>
       <div class="space-y-4">
-        <div class="bg-gray-800 p-4 rounded-md">
+        <div class="bg-neutral-800 p-4 rounded-md">
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <i class="fas fa-database mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-gray-300">Usable Capacity (Pre-Overhead):</span>
+              <span class="font-medium text-neutral-300">Usable Capacity (Pre-Overhead):</span>
             </div>
             <span class="text-lg font-bold text-white" id="usableCapacity">-</span>
           </div>
-          <p class="text-xs text-gray-500 mt-1">
+          <p class="text-xs text-neutral-500 mt-1">
             Capacity after redundancy, before ZFS overhead. Displayed in TB.
           </p>
         </div>
-        <div class="bg-gray-800 p-4 rounded-md">
+        <div class="bg-neutral-800 p-4 rounded-md">
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <i class="fas fa-hdd mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-gray-300">Effective Capacity (Actual):</span>
+              <span class="font-medium text-neutral-300">Effective Capacity (Actual):</span>
             </div>
             <span class="text-lg font-bold text-white" id="effectiveCapacity">-</span>
           </div>
-          <p class="text-xs text-gray-500 mt-1">
+          <p class="text-xs text-neutral-500 mt-1">
             Actual data storage space after redundancy and ZFS overhead.
             Displayed in TB.
           </p>
         </div>
-        <div class="bg-gray-800 p-4 rounded-md">
+        <div class="bg-neutral-800 p-4 rounded-md">
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <i class="fas fa-percentage mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-gray-300">Calculated ZFS Overhead:</span>
+              <span class="font-medium text-neutral-300">Calculated ZFS Overhead:</span>
             </div>
             <span class="text-lg font-bold text-white" id="zfsOverheadPercentage">-</span>
           </div>
-          <p class="text-xs text-gray-500 mt-1">
+          <p class="text-xs text-neutral-500 mt-1">
             Estimated percentage of total raw capacity used by ZFS metadata,
             slop space, etc.
           </p>
         </div>
-        <div class="bg-gray-800 p-4 rounded-md">
+        <div class="bg-neutral-800 p-4 rounded-md">
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <i class="fas fa-sync mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-gray-300">Mirror Pairs:</span>
+              <span class="font-medium text-neutral-300">Mirror Pairs:</span>
             </div>
             <span class="text-lg font-bold text-white" id="mirrorPairs">-</span>
           </div>
         </div>
-        <div class="bg-gray-800 p-4 rounded-md">
+        <div class="bg-neutral-800 p-4 rounded-md">
           <div class="flex items-start">
             <i class="fas fa-shield-alt mt-1 mr-2 text-pink-500" aria-hidden="true"></i>
             <div>
-              <span class="font-medium text-gray-300">Fault Tolerance:</span>
-              <p class="mt-1 text-gray-400" id="faultToleranceExplanation">
+              <span class="font-medium text-neutral-300">Fault Tolerance:</span>
+              <p class="mt-1 text-neutral-400" id="faultToleranceExplanation">
                 -
               </p>
             </div>
@@ -195,13 +195,13 @@
       </div>
     </div>
 
-    <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6">
-      <h3 class="font-medium text-gray-100 text-lg mb-4">Redundancy Levels Explained</h3>
+    <div class="mt-6 bg-neutral-800 rounded-lg shadow-md p-6">
+      <h3 class="font-medium text-neutral-100 text-lg mb-4">Redundancy Levels Explained</h3>
       <div class="space-y-4">
-        <p class="text-gray-300 leading-relaxed">
+        <p class="text-neutral-300 leading-relaxed">
           Redundancy levels determine how your data is protected against disk failures. Each level offers a different balance of usable capacity and fault tolerance.
         </p>
-        <ul class="list-disc pl-5 space-y-2 text-gray-300">
+        <ul class="list-disc pl-5 space-y-2 text-neutral-300">
           <li>
             <strong>None (striped):</strong> Data is striped across all disks with no redundancy. If any disk fails, all data is lost.
           </li>
@@ -221,13 +221,13 @@
       </div>
     </div>
 
-    <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6">
-      <h3 class="font-medium text-gray-100 text-lg mb-4">What is Effective Capacity?</h3>
+    <div class="mt-6 bg-neutral-800 rounded-lg shadow-md p-6">
+      <h3 class="font-medium text-neutral-100 text-lg mb-4">What is Effective Capacity?</h3>
       <div class="space-y-4">
-        <p class="text-gray-300 leading-relaxed">
+        <p class="text-neutral-300 leading-relaxed">
           Effective capacity represents the actual disk space available for storing your data after accounting for both the chosen redundancy level (like RAIDZ parity or mirroring) and ZFS's internal overhead.
         </p>
-        <ul class="list-disc pl-5 space-y-2 text-gray-300">
+        <ul class="list-disc pl-5 space-y-2 text-neutral-300">
           <li>
             <strong>Redundancy Level:</strong> Space reserved for parity or mirroring to ensure data protection.
           </li>
@@ -235,13 +235,13 @@
             <strong>ZFS Overhead:</strong> Includes metadata, checksums, ZIL (ZFS Intent Log), slop space, and partitioning/alignment.
           </li>
         </ul>
-        <p class="text-gray-300 leading-relaxed">
+        <p class="text-neutral-300 leading-relaxed">
           This calculator estimates the overhead to provide a more realistic figure than simply subtracting parity disks. Results are typically shown in Terabytes (TB).
         </p>
       </div>
     </div>
 
-    <footer class="mt-8 text-center text-sm text-gray-500">
+    <footer class="mt-8 text-center text-sm text-neutral-500">
       <p>© altan.me All rights reserved.</p>
       <p class="mt-2">
         ZFS Storage Calculator helps you plan your ZFS storage pools and
@@ -264,7 +264,7 @@
 
     // Updated button styling classes for active and inactive states
     const activeClasses = ["bg-gradient-to-r", "from-pink-500", "to-blue-500", "text-white"];
-    const inactiveClasses = ["bg-gray-700", "text-gray-200", "hover:bg-gray-600"];
+    const inactiveClasses = ["bg-neutral-700", "text-neutral-200", "hover:bg-neutral-600"];
 
     /**
      * Calculates ZFS overhead and usable space for a given number of drives and drive size
@@ -488,7 +488,7 @@
 
       const mirrorPairsRow = document
         .getElementById("mirrorPairs")
-        .closest(".bg-gray-700");
+        .closest(".bg-neutral-700");
       if (redundancy === "mirror") {
         mirrorPairsRow.style.display = "block";
       } else {
