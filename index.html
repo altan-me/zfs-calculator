@@ -1,545 +1,663 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Primary Meta Tags -->
+    <title>ZFS Storage Calculator | Calculate RAID Storage Capacity</title>
+    <meta
+      name="description"
+      content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead."
+    />
+    <meta
+      name="keywords"
+      content="ZFS, storage calculator, RAID calculator, RAIDZ, ZFS pool, data redundancy, usable capacity, effective capacity, ZFS overhead, mirror pairs, TB, GB"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://zfs-calculator.com" />
 
-  <!-- Primary Meta Tags -->
-  <title>ZFS Storage Calculator | Calculate RAID Storage Capacity</title>
-  <meta name="description"
-    content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead." />
-  <meta name="keywords"
-    content="ZFS, storage calculator, RAID calculator, RAIDZ, ZFS pool, data redundancy, usable capacity, effective capacity, ZFS overhead, mirror pairs, TB, GB" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://zfs-calculator.com" />
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://zfs-calculator.com" />
+    <meta
+      property="og:title"
+      content="ZFS Storage Calculator | Calculate RAID Storage Capacity"
+    />
+    <meta
+      property="og:description"
+      content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead."
+    />
 
-  <!-- Open Graph / Facebook Meta Tags -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://zfs-calculator.com" />
-  <meta property="og:title" content="ZFS Storage Calculator | Calculate RAID Storage Capacity" />
-  <meta property="og:description"
-    content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead." />
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://zfs-calculator.com" />
+    <meta
+      name="twitter:title"
+      content="ZFS Storage Calculator | Calculate RAID Storage Capacity"
+    />
+    <meta
+      name="twitter:description"
+      content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead."
+    />
 
-  <!-- Twitter Meta Tags -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://zfs-calculator.com" />
-  <meta name="twitter:title" content="ZFS Storage Calculator | Calculate RAID Storage Capacity" />
-  <meta name="twitter:description"
-    content="Free ZFS Storage Calculator to determine usable and effective capacity for ZFS pools with different redundancy levels (RAIDZ1, RAIDZ2, RAIDZ3, Mirror), accounting for ZFS overhead." />
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="icon" href="/favicon.ico" />
-  <link rel="manifest" href="/site.webmanifest" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-
-  <!-- Structured Data / JSON-LD -->
-  <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "ZFS Storage Calculator",
-          "description": "Calculate usable and effective capacity for ZFS storage pools with different redundancy levels, accounting for ZFS overhead.",
-          "applicationCategory": "UtilityApplication",
-          "operatingSystem": "Web Browser",
-          "author": {
-            "@type": "Organization",
-            "name": "altan.me",
-            "url": "https://zfs-calculator.com"
-          }
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ZFS Storage Calculator",
+        "description": "Calculate usable and effective capacity for ZFS storage pools with different redundancy levels, accounting for ZFS overhead.",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Web Browser",
+        "author": {
+          "@type": "Organization",
+          "name": "altan.me",
+          "url": "https://zfs-calculator.com"
         }
-      </script>
-  <style>
-    /* Ensure the TB/GB buttons match the height of the disk size input */
-    .unit-button {
-      height: calc(100% - 2px); /* Adjust for border width */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .flex.items-center.space-x-2 {
-      align-items: stretch; /* Ensure all children have the same height */
-    }
-    @media (max-width: 400px) {
+      }
+    </script>
+    <style>
+      /* Ensure the TB/GB buttons match the height of the disk size input */
+      .unit-button {
+        height: calc(100% - 2px); /* Adjust for border width */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       .flex.items-center.space-x-2 {
-        flex-wrap: nowrap; /* Prevent wrapping */
+        align-items: stretch; /* Ensure all children have the same height */
       }
-      #diskSize {
-        flex-shrink: 1; /* Allow the input to shrink */
-        min-width: 50%; /* Set a minimum width to prevent it from becoming too small */
-      }
-    }
-  </style>
-</head>
-
-<!-- Updated styling to follow TikTok's design language -->
-<body class="bg-neutral-950 text-white p-4">
-  <div class="max-w-2xl mx-auto">
-    <h1 class="mb-4 text-4xl font-extrabold text-white md:text-5xl lg:text-5xl mb-6 text-center">
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">ZFS</span>
-      Storage Calculator
-    </h1>
-    <div class="bg-neutral-900 rounded-lg shadow-lg p-6 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-neutral-400">Number of Disks</label>
-          <input type="number" id="disks" min="1" value="4"
-            class="w-full p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-            aria-label="Number of disks in the ZFS pool" />
-        </div>
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-neutral-400">Disk Size</label>
-          <div class="flex items-center space-x-2">
-            <input type="number" id="diskSize" min="1" value="4"
-              class="flex-grow p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 w-full"
-              aria-label="Size of each disk" />
-            <div class="inline-flex rounded-md shadow-sm" role="group">
-              <button type="button"
-                class="unit-button px-4 py-2 text-sm font-medium border border-neutral-700 bg-neutral-800 text-white rounded-l-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-neutral-700"
-                data-unit="TB" aria-label="Select Terabytes">
-                TB
-              </button>
-              <button type="button"
-                class="unit-button px-4 py-2 text-sm font-medium border-t border-b border-r border-neutral-700 bg-neutral-800 text-white rounded-r-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-neutral-700"
-                data-unit="GB" aria-label="Select Gigabytes">
-                GB
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="space-y-2 md:col-span-2">
-          <label class="block text-sm font-medium text-neutral-400">Redundancy Level</label>
-          <select id="faultTolerance"
-            class="w-full p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-            aria-label="Select ZFS redundancy level">
-            <option value="none">None (striped)</option>
-            <option value="single">Single Parity (raidz1)</option>
-            <option value="double">Double Parity (raidz2)</option>
-            <option value="triple">Triple Parity (raidz3)</option>
-            <option value="mirror" selected>Mirror Pairs</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div id="error" class="flex items-center p-4 mb-4 text-sm font-medium text-red-400 rounded-lg bg-red-800"
-      role="alert" style="display: none"></div>
-
-    <div class="bg-neutral-900 rounded-lg shadow-lg p-6" id="results">
-      <div id="error" class="error" style="display: none"></div>
-      <h2 class="text-xl font-semibold text-white mb-4">Results</h2>
-      <div class="space-y-4">
-        <div class="bg-neutral-800 p-4 rounded-md">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <i class="fas fa-database mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-neutral-300">Usable Capacity (Pre-Overhead):</span>
-            </div>
-            <span class="text-lg font-bold text-white" id="usableCapacity">-</span>
-          </div>
-          <p class="text-xs text-neutral-500 mt-1">
-            Capacity after redundancy, before ZFS overhead. Displayed in TB.
-          </p>
-        </div>
-        <div class="bg-neutral-800 p-4 rounded-md">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <i class="fas fa-hdd mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-neutral-300">Effective Capacity (Actual):</span>
-            </div>
-            <span class="text-lg font-bold text-white" id="effectiveCapacity">-</span>
-          </div>
-          <p class="text-xs text-neutral-500 mt-1">
-            Actual data storage space after redundancy and ZFS overhead.
-            Displayed in TB.
-          </p>
-        </div>
-        <div class="bg-neutral-800 p-4 rounded-md">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <i class="fas fa-percentage mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-neutral-300">Calculated ZFS Overhead:</span>
-            </div>
-            <span class="text-lg font-bold text-white" id="zfsOverheadPercentage">-</span>
-          </div>
-          <p class="text-xs text-neutral-500 mt-1">
-            Estimated percentage of total raw capacity used by ZFS metadata,
-            slop space, etc.
-          </p>
-        </div>
-        <div class="bg-neutral-800 p-4 rounded-md">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <i class="fas fa-sync mr-2 text-pink-500" aria-hidden="true"></i>
-              <span class="font-medium text-neutral-300">Mirror Pairs:</span>
-            </div>
-            <span class="text-lg font-bold text-white" id="mirrorPairs">-</span>
-          </div>
-        </div>
-        <div class="bg-neutral-800 p-4 rounded-md">
-          <div class="flex items-start">
-            <i class="fas fa-shield-alt mt-1 mr-2 text-pink-500" aria-hidden="true"></i>
-            <div>
-              <span class="font-medium text-neutral-300">Fault Tolerance:</span>
-              <p class="mt-1 text-neutral-400" id="faultToleranceExplanation">
-                -
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-6 bg-neutral-800 rounded-lg shadow-md p-6">
-      <h3 class="font-medium text-neutral-100 text-lg mb-4">Redundancy Levels Explained</h3>
-      <div class="space-y-4">
-        <p class="text-neutral-300 leading-relaxed">
-          Redundancy levels determine how your data is protected against disk failures. Each level offers a different balance of usable capacity and fault tolerance.
-        </p>
-        <ul class="list-disc pl-5 space-y-2 text-neutral-300">
-          <li>
-            <strong>None (striped):</strong> Data is striped across all disks with no redundancy. If any disk fails, all data is lost.
-          </li>
-          <li>
-            <strong>Single Parity (RAIDZ1):</strong> Data is striped across disks with single parity for fault tolerance. Can survive the failure of <strong>1</strong> disk.
-          </li>
-          <li>
-            <strong>Double Parity (RAIDZ2):</strong> Data is striped across disks with double parity for fault tolerance. Can survive the failure of up to <strong>2</strong> disks.
-          </li>
-          <li>
-            <strong>Triple Parity (RAIDZ3):</strong> Data is striped across disks with triple parity for maximum fault tolerance. Can survive the failure of up to <strong>3</strong> disks.
-          </li>
-          <li>
-            <strong>Mirror Pairs:</strong> Data is mirrored across pairs of disks for redundancy. Can survive the failure of <strong>1</strong> disk in each mirror pair.
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="mt-6 bg-neutral-800 rounded-lg shadow-md p-6">
-      <h3 class="font-medium text-neutral-100 text-lg mb-4">What is Effective Capacity?</h3>
-      <div class="space-y-4">
-        <p class="text-neutral-300 leading-relaxed">
-          Effective capacity represents the actual disk space available for storing your data after accounting for both the chosen redundancy level (like RAIDZ parity or mirroring) and ZFS's internal overhead.
-        </p>
-        <ul class="list-disc pl-5 space-y-2 text-neutral-300">
-          <li>
-            <strong>Redundancy Level:</strong> Space reserved for parity or mirroring to ensure data protection.
-          </li>
-          <li>
-            <strong>ZFS Overhead:</strong> Includes metadata, checksums, ZIL (ZFS Intent Log), slop space, and partitioning/alignment.
-          </li>
-        </ul>
-        <p class="text-neutral-300 leading-relaxed">
-          This calculator estimates the overhead to provide a more realistic figure than simply subtracting parity disks. Results are typically shown in Terabytes (TB).
-        </p>
-      </div>
-    </div>
-
-    <footer class="mt-8 text-center text-sm text-neutral-500">
-      <p>© altan.me All rights reserved.</p>
-      <p class="mt-2">
-        ZFS Storage Calculator helps you plan your ZFS storage pools and
-        calculate usable capacity with different redundancy levels.
-      </p>
-    </footer>
-  </div>
-
-  <script>
-    document.querySelector(
-      "footer p:first-child"
-    ).innerHTML = `© ${new Date().getFullYear()} altan.me. All rights reserved.`;
-
-    // Define byte constants globally
-    const GB_IN_BYTES = 1000 * 1000 * 1000;
-    const TB_IN_BYTES = 1000 * GB_IN_BYTES;
-
-    // State variable for selected unit
-    let selectedUnit = "TB"; // Default to TB
-
-    // Updated button styling classes for active and inactive states
-    const activeClasses = ["bg-gradient-to-r", "from-pink-500", "to-blue-500", "text-white"];
-    const inactiveClasses = ["bg-neutral-700", "text-neutral-200", "hover:bg-neutral-600"];
-
-    /**
-     * Calculates ZFS overhead and usable space for a given number of drives and drive size
-     * Assumes 1 GB = 1,000,000,000 bytes
-     * @param {number} driveCount - Number of drives in the pool
-     * @param {number} driveSizeInBytes - Size of each drive in bytes
-     * @returns {Object} Object containing overhead breakdown and usable space
-     */
-    function calculateZFSOverhead(driveCount, driveSizeInBytes) {
-      // Constants in Bytes
-      const MiB = 1024 * 1024;
-      const GiB = 1024 * MiB; // Use GiB for internal calculations where powers of 2 matter
-
-      // Calculate overhead per physical disk (Estimates based on common observations)
-      const partitionOverhead = 10 * MiB; // Partition labels and alignment padding
-      const reservedPartition = 8 * MiB; // Reserved partition (often unused but present)
-      const vdevLabels = 4 * 256 * 1024; // 4 labels per disk, 256 KiB each
-      const bootBlockReservation = 3.5 * MiB; // Space potentially reserved for boot blocks
-
-      // Calculate total raw capacity in bytes
-      const totalRawCapacityBytes = driveCount * driveSizeInBytes;
-
-      // Calculate per-disk overhead
-      const perDiskOverhead =
-        partitionOverhead +
-        reservedPartition +
-        vdevLabels +
-        bootBlockReservation;
-      const totalPerDiskOverhead = perDiskOverhead * driveCount;
-
-      // Calculate metaslab allocation loss (Highly approximate)
-      const capacityBeforeMetaslabLoss =
-        totalRawCapacityBytes - totalPerDiskOverhead;
-      const metaslabLoss = capacityBeforeMetaslabLoss * 0.005; // Simplified 0.5% estimate
-
-      // Calculate post-metaslab pool capacity
-      const poolCapacityBeforeSlop =
-        capacityBeforeMetaslabLoss - metaslabLoss;
-
-      // Calculate slop space reservation (1/32 of pool capacity available *after* overhead)
-      const slopSpaceReservation = poolCapacityBeforeSlop / 32;
-
-      // Calculate final usable space *within the pool* (before data redundancy proportion)
-      const poolUsableSpaceBytes =
-        poolCapacityBeforeSlop - slopSpaceReservation;
-
-      // Calculate total overhead
-      const totalOverheadBytes = totalRawCapacityBytes - poolUsableSpaceBytes;
-      const overheadPercentage =
-        totalRawCapacityBytes > 0
-          ? (totalOverheadBytes / totalRawCapacityBytes) * 100
-          : 0; // Avoid division by zero
-
-      // Ensure usable space isn't negative in weird edge cases
-      const finalPoolUsableSpaceBytes = Math.max(0, poolUsableSpaceBytes);
-
-      return {
-        rawCapacityBytes: totalRawCapacityBytes,
-        overheadBreakdown: {
-          partitionAndAlignment: totalPerDiskOverhead,
-          metaslabAllocationLoss: metaslabLoss,
-          slopSpaceReservation: slopSpaceReservation,
-        },
-        totalOverheadBytes: totalOverheadBytes,
-        overheadPercentage: overheadPercentage,
-        usableSpaceBytes: finalPoolUsableSpaceBytes,
-        usablePercentage: 100 - overheadPercentage,
-      };
-    }
-
-    function getFaultToleranceExplanation(redundancy, disks) {
-      switch (redundancy) {
-        case "none":
-          return "No fault tolerance. If any disk fails, all data is lost.";
-        case "single":
-          return "Can survive the failure of <strong>1</strong> disk. If more than <strong>1</strong> disk fails, data will be lost.";
-        case "double":
-          return "Can survive the failure of up to <strong>2</strong> disks. If more than <strong>2</strong> disks fail, data will be lost.";
-        case "triple":
-          return "Can survive the failure of up to <strong>3</strong> disks. If more than <strong>3</strong> disks fail, data will be lost.";
-        case "mirror":
-          const pairs = Math.floor(disks / 2);
-          return `Can survive the failure of <strong>1</strong> disk in each mirror pair. Up to <strong>${pairs}</strong> disk failures can be tolerated if they occur in different mirror pairs.`;
-        default:
-          return "Fault tolerance information not available.";
-      }
-    }
-
-    function updateDiskSizeAriaLabel() {
-      const diskSizeInputEl = document.getElementById("diskSize");
-      // Use the selectedUnit state variable
-      const unitText = selectedUnit === "TB" ? "terabytes" : "gigabytes";
-      const baseBytes =
-        selectedUnit === "TB" ? "1,000,000,000,000" : "1,000,000,000";
-      diskSizeInputEl.setAttribute(
-        "aria-label",
-        `Size of each disk in ${unitText} (1 ${selectedUnit} = ${baseBytes} bytes)`
-      );
-    }
-
-    function calculate() {
-      const disks = parseInt(document.getElementById("disks").value);
-      const diskSizeInput = parseFloat(
-        document.getElementById("diskSize").value
-      );
-      // Unit comes from the selectedUnit state variable
-      const redundancy = document.getElementById("faultTolerance").value;
-
-      let diskSizeBytes;
-      let errorMessage = "";
-
-      // Convert input size to bytes based on selected unit
-      if (selectedUnit === "TB") {
-        diskSizeBytes = diskSizeInput * TB_IN_BYTES;
-      } else if (selectedUnit === "GB") {
-        diskSizeBytes = diskSizeInput * GB_IN_BYTES;
-      } else {
-        errorMessage = "Invalid disk size unit selected."; // Should not happen
-      }
-
-      // Check for valid disk size input
-      if (!errorMessage && (isNaN(diskSizeInput) || diskSizeInput <= 0)) {
-        errorMessage = `Disk size must be greater than 0 ${selectedUnit}`; // Use state variable
-      }
-
-      // Check for valid number of disks
-      if (isNaN(disks) || disks < 1) {
-        errorMessage = "Number of disks must be at least 1";
-      }
-
-      if (errorMessage) {
-        document.getElementById("error").textContent = errorMessage;
-        document.getElementById("error").style.display = "flex";
-        document.getElementById("results").style.display = "none";
-        return;
-      }
-
-      let usableDisks;
-      let mirrorPairs = 0;
-
-      switch (redundancy) {
-        case "none":
-          usableDisks = disks;
-          mirrorPairs = 0;
-          break;
-        case "single":
-          if (disks < 2) errorMessage = "RAIDZ1 requires at least 2 disks";
-          usableDisks = disks - 1;
-          mirrorPairs = 0;
-          break;
-        case "double":
-          if (disks < 3) errorMessage = "RAIDZ2 requires at least 3 disks";
-          usableDisks = disks - 2;
-          mirrorPairs = 0;
-          break;
-        case "triple":
-          if (disks < 4) errorMessage = "RAIDZ3 requires at least 4 disks";
-          usableDisks = disks - 3;
-          mirrorPairs = 0;
-          break;
-        case "mirror":
-          if (disks % 2 !== 0) {
-            errorMessage = "Mirror pairs require an even number of disks";
-          } else if (disks < 2) {
-            errorMessage = "Mirror requires at least 2 disks";
-          } else {
-            mirrorPairs = disks / 2;
-            usableDisks = mirrorPairs;
-          }
-          break;
-        default:
-          errorMessage = "Invalid redundancy level selected";
-          usableDisks = 0; // Prevent further calculation
-          break;
-      }
-
-      // Check for valid usable disks resulting from redundancy checks
-      if (!errorMessage && usableDisks < 1) {
-        errorMessage = `Not enough disks (${disks}) for ${redundancy} redundancy level.`;
-      }
-
-      if (errorMessage) {
-        document.getElementById("error").textContent = errorMessage;
-        document.getElementById("error").style.display = "flex";
-        document.getElementById("results").style.display = "none";
-        return;
-      }
-
-      // --- Calculations ---
-
-      // 1. Calculate ZFS overhead based on *total* raw capacity
-      const zfsOverheadResult = calculateZFSOverhead(disks, diskSizeBytes);
-
-      // 2. Calculate "Usable Capacity (Pre-Overhead)" - Capacity after redundancy only
-      const usableCapacityBytes = usableDisks * diskSizeBytes;
-      const usableCapacityTB = usableCapacityBytes / TB_IN_BYTES;
-
-      // 3. Calculate "Effective Capacity (Actual)"
-      const dataDiskProportion = disks > 0 ? usableDisks / disks : 0;
-      const effectiveCapacityBytes =
-        zfsOverheadResult.usableSpaceBytes * dataDiskProportion;
-      const effectiveCapacityTB = effectiveCapacityBytes / TB_IN_BYTES;
-
-      // --- Update Display ---
-      const errorElement = document.getElementById("error");
-      const resultsElement = document.getElementById("results");
-
-      if (errorElement) {
-        errorElement.style.display = "none";
-      }
-
-      if (resultsElement) {
-        resultsElement.style.display = "block";
-      }
-
-      document.getElementById("usableCapacity").textContent = `${usableCapacityTB.toFixed(2)} TB`;
-      document.getElementById("effectiveCapacity").textContent = `${effectiveCapacityTB.toFixed(2)} TB`;
-      document.getElementById("zfsOverheadPercentage").textContent = `${zfsOverheadResult.overheadPercentage.toFixed(2)} %`;
-      document.getElementById("mirrorPairs").textContent = mirrorPairs > 0 ? mirrorPairs : "-";
-      document.getElementById("faultToleranceExplanation").innerHTML = getFaultToleranceExplanation(redundancy, disks);
-
-      const mirrorPairsRow = document.getElementById("mirrorPairs")?.closest(".bg-neutral-700");
-      if (mirrorPairsRow) {
-        if (redundancy === "mirror") {
-          mirrorPairsRow.style.display = "block";
-        } else {
-          mirrorPairsRow.style.display = "none";
+      @media (max-width: 400px) {
+        .flex.items-center.space-x-2 {
+          flex-wrap: nowrap; /* Prevent wrapping */
+        }
+        #diskSize {
+          flex-shrink: 1; /* Allow the input to shrink */
+          min-width: 50%; /* Set a minimum width to prevent it from becoming too small */
         }
       }
-    }
+    </style>
+  </head>
 
-    // --- Event Listeners ---
-    document.getElementById("disks").addEventListener("input", calculate);
-    document.getElementById("diskSize").addEventListener("input", calculate);
-    document
-      .getElementById("faultTolerance")
-      .addEventListener("change", calculate);
+  <!-- Updated styling to follow TikTok's design language -->
+  <body class="bg-neutral-950 text-white p-4">
+    <div class="max-w-2xl mx-auto">
+      <h1
+        class="mb-4 text-4xl font-extrabold text-white md:text-5xl lg:text-5xl mb-6 text-center"
+      >
+        <span
+          class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500"
+          >ZFS</span
+        >
+        Storage Calculator
+      </h1>
+      <div class="bg-neutral-900 rounded-lg shadow-lg p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-neutral-400"
+              >Number of Disks</label
+            >
+            <input
+              type="number"
+              id="disks"
+              min="1"
+              value="4"
+              class="w-full p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              aria-label="Number of disks in the ZFS pool"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-neutral-400"
+              >Disk Size</label
+            >
+            <div class="flex items-center space-x-2">
+              <input
+                type="number"
+                id="diskSize"
+                min="1"
+                value="4"
+                class="flex-grow p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 w-full"
+                aria-label="Size of each disk"
+              />
+              <div class="inline-flex rounded-md shadow-sm" role="group">
+                <button
+                  type="button"
+                  class="unit-button px-4 py-2 text-sm font-medium border border-neutral-700 bg-neutral-800 text-white rounded-l-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-neutral-700"
+                  data-unit="TB"
+                  aria-label="Select Terabytes"
+                >
+                  TB
+                </button>
+                <button
+                  type="button"
+                  class="unit-button px-4 py-2 text-sm font-medium border-t border-b border-r border-neutral-700 bg-neutral-800 text-white rounded-r-lg focus:z-10 focus:ring-2 focus:ring-pink-500 focus:outline-none hover:bg-neutral-700"
+                  data-unit="GB"
+                  aria-label="Select Gigabytes"
+                >
+                  GB
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-2 md:col-span-2">
+            <label class="block text-sm font-medium text-neutral-400"
+              >Redundancy Level</label
+            >
+            <select
+              id="faultTolerance"
+              class="w-full p-3 border border-neutral-700 bg-neutral-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              aria-label="Select ZFS redundancy level"
+            >
+              <option value="none">None (striped)</option>
+              <option value="single">Single Parity (raidz1)</option>
+              <option value="double">Double Parity (raidz2)</option>
+              <option value="triple">Triple Parity (raidz3)</option>
+              <option value="mirror" selected>Mirror Pairs</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-    // Unit Button Group Listener
-    const unitButtons = document.querySelectorAll(".unit-button");
-    unitButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const newUnit = button.getAttribute("data-unit");
-        if (newUnit !== selectedUnit) {
-          selectedUnit = newUnit; // Update state
+      <div
+        id="error"
+        class="flex items-center p-4 mb-4 text-sm font-medium text-red-400 rounded-lg bg-red-800"
+        role="alert"
+        style="display: none"
+      ></div>
 
-          // Update styles
-          unitButtons.forEach((btn) => {
-            btn.classList.remove(...activeClasses);
-            btn.classList.add(...inactiveClasses);
-          });
+      <div class="bg-neutral-900 rounded-lg shadow-lg p-6" id="results">
+        <div id="error" class="error" style="display: none"></div>
+        <h2 class="text-xl font-semibold text-white mb-4">Results</h2>
+        <div class="space-y-4">
+          <div class="bg-neutral-800 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i
+                  class="fas fa-database mr-2 text-pink-500"
+                  aria-hidden="true"
+                ></i>
+                <span class="font-medium text-neutral-300"
+                  >Usable Capacity (Pre-Overhead):</span
+                >
+              </div>
+              <span class="text-lg font-bold text-white" id="usableCapacity"
+                >-</span
+              >
+            </div>
+            <p class="text-xs text-neutral-500 mt-1">
+              Capacity after redundancy, before ZFS overhead. Displayed in TB.
+            </p>
+          </div>
+          <div class="bg-neutral-800 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i class="fas fa-hdd mr-2 text-pink-500" aria-hidden="true"></i>
+                <span class="font-medium text-neutral-300"
+                  >Effective Capacity (Actual):</span
+                >
+              </div>
+              <span class="text-lg font-bold text-white" id="effectiveCapacity"
+                >-</span
+              >
+            </div>
+            <p class="text-xs text-neutral-500 mt-1">
+              Actual data storage space after redundancy and ZFS overhead.
+              Displayed in TB.
+            </p>
+          </div>
+          <div class="bg-neutral-800 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i
+                  class="fas fa-percentage mr-2 text-pink-500"
+                  aria-hidden="true"
+                ></i>
+                <span class="font-medium text-neutral-300"
+                  >Calculated ZFS Overhead:</span
+                >
+              </div>
+              <span
+                class="text-lg font-bold text-white"
+                id="zfsOverheadPercentage"
+                >-</span
+              >
+            </div>
+            <p class="text-xs text-neutral-500 mt-1">
+              Estimated percentage of total raw capacity used by ZFS metadata,
+              slop space, etc.
+            </p>
+          </div>
+          <div class="bg-neutral-800 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <i
+                  class="fas fa-sync mr-2 text-pink-500"
+                  aria-hidden="true"
+                ></i>
+                <span class="font-medium text-neutral-300">Mirror Pairs:</span>
+              </div>
+              <span class="text-lg font-bold text-white" id="mirrorPairs"
+                >-</span
+              >
+            </div>
+          </div>
+          <div class="bg-neutral-800 p-4 rounded-md">
+            <div class="flex items-start">
+              <i
+                class="fas fa-shield-alt mt-1 mr-2 text-pink-500"
+                aria-hidden="true"
+              ></i>
+              <div>
+                <span class="font-medium text-neutral-300"
+                  >Fault Tolerance:</span
+                >
+                <p class="mt-1 text-neutral-400" id="faultToleranceExplanation">
+                  -
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-neutral-800 rounded-lg shadow-md p-6">
+        <h3 class="font-medium text-neutral-100 text-lg mb-4">
+          Redundancy Levels Explained
+        </h3>
+        <div class="space-y-4">
+          <p class="text-neutral-300 leading-relaxed">
+            Redundancy levels determine how your data is protected against disk
+            failures. Each level offers a different balance of usable capacity
+            and fault tolerance.
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-neutral-300">
+            <li>
+              <strong>None (striped):</strong> Data is striped across all disks
+              with no redundancy. If any disk fails, all data is lost.
+            </li>
+            <li>
+              <strong>Single Parity (RAIDZ1):</strong> Data is striped across
+              disks with single parity for fault tolerance. Can survive the
+              failure of <strong>1</strong> disk.
+            </li>
+            <li>
+              <strong>Double Parity (RAIDZ2):</strong> Data is striped across
+              disks with double parity for fault tolerance. Can survive the
+              failure of up to <strong>2</strong> disks.
+            </li>
+            <li>
+              <strong>Triple Parity (RAIDZ3):</strong> Data is striped across
+              disks with triple parity for maximum fault tolerance. Can survive
+              the failure of up to <strong>3</strong> disks.
+            </li>
+            <li>
+              <strong>Mirror Pairs:</strong> Data is mirrored across pairs of
+              disks for redundancy. Can survive the failure of
+              <strong>1</strong> disk in each mirror pair.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-neutral-800 rounded-lg shadow-md p-6">
+        <h3 class="font-medium text-neutral-100 text-lg mb-4">
+          What is Effective Capacity?
+        </h3>
+        <div class="space-y-4">
+          <p class="text-neutral-300 leading-relaxed">
+            Effective capacity represents the actual disk space available for
+            storing your data after accounting for both the chosen redundancy
+            level (like RAIDZ parity or mirroring) and ZFS's internal overhead.
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-neutral-300">
+            <li>
+              <strong>Redundancy Level:</strong> Space reserved for parity or
+              mirroring to ensure data protection.
+            </li>
+            <li>
+              <strong>ZFS Overhead:</strong> Includes metadata, checksums, ZIL
+              (ZFS Intent Log), slop space, and partitioning/alignment.
+            </li>
+          </ul>
+          <p class="text-neutral-300 leading-relaxed">
+            This calculator estimates the overhead to provide a more realistic
+            figure than simply subtracting parity disks. Results are typically
+            shown in Terabytes (TB).
+          </p>
+        </div>
+      </div>
+
+      <footer class="mt-8 text-center text-sm text-neutral-500">
+        <p>© altan.me All rights reserved.</p>
+        <p class="mt-2">
+          ZFS Storage Calculator helps you plan your ZFS storage pools and
+          calculate usable capacity with different redundancy levels.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      document.querySelector(
+        "footer p:first-child"
+      ).innerHTML = `© ${new Date().getFullYear()} altan.me. All rights reserved.`;
+
+      // Define byte constants globally
+      const GB_IN_BYTES = 1000 * 1000 * 1000;
+      const TB_IN_BYTES = 1000 * GB_IN_BYTES;
+
+      // State variable for selected unit
+      let selectedUnit = "TB"; // Default to TB
+
+      // Updated button styling classes for active and inactive states
+      const activeClasses = [
+        "bg-gradient-to-r",
+        "from-pink-500",
+        "to-blue-500",
+        "text-white",
+      ];
+      const inactiveClasses = [
+        "bg-neutral-700",
+        "text-neutral-200",
+        "hover:bg-neutral-600",
+      ];
+
+      /**
+       * Calculates ZFS overhead and usable space for a given number of drives and drive size
+       * Assumes 1 GB = 1,000,000,000 bytes
+       * @param {number} driveCount - Number of drives in the pool
+       * @param {number} driveSizeInBytes - Size of each drive in bytes
+       * @returns {Object} Object containing overhead breakdown and usable space
+       */
+      function calculateZFSOverhead(driveCount, driveSizeInBytes) {
+        // Constants in Bytes
+        const MiB = 1024 * 1024;
+        const GiB = 1024 * MiB; // Use GiB for internal calculations where powers of 2 matter
+
+        // Calculate overhead per physical disk (Estimates based on common observations)
+        const partitionOverhead = 10 * MiB; // Partition labels and alignment padding
+        const reservedPartition = 8 * MiB; // Reserved partition (often unused but present)
+        const vdevLabels = 4 * 256 * 1024; // 4 labels per disk, 256 KiB each
+        const bootBlockReservation = 3.5 * MiB; // Space potentially reserved for boot blocks
+
+        // Calculate total raw capacity in bytes
+        const totalRawCapacityBytes = driveCount * driveSizeInBytes;
+
+        // Calculate per-disk overhead
+        const perDiskOverhead =
+          partitionOverhead +
+          reservedPartition +
+          vdevLabels +
+          bootBlockReservation;
+        const totalPerDiskOverhead = perDiskOverhead * driveCount;
+
+        // Calculate metaslab allocation loss (Highly approximate)
+        const capacityBeforeMetaslabLoss =
+          totalRawCapacityBytes - totalPerDiskOverhead;
+        const metaslabLoss = capacityBeforeMetaslabLoss * 0.005; // Simplified 0.5% estimate
+
+        // Calculate post-metaslab pool capacity
+        const poolCapacityBeforeSlop =
+          capacityBeforeMetaslabLoss - metaslabLoss;
+
+        // Calculate slop space reservation (1/32 of pool capacity available *after* overhead)
+        const slopSpaceReservation = poolCapacityBeforeSlop / 32;
+
+        // Calculate final usable space *within the pool* (before data redundancy proportion)
+        const poolUsableSpaceBytes =
+          poolCapacityBeforeSlop - slopSpaceReservation;
+
+        // Calculate total overhead
+        const totalOverheadBytes = totalRawCapacityBytes - poolUsableSpaceBytes;
+        const overheadPercentage =
+          totalRawCapacityBytes > 0
+            ? (totalOverheadBytes / totalRawCapacityBytes) * 100
+            : 0; // Avoid division by zero
+
+        // Ensure usable space isn't negative in weird edge cases
+        const finalPoolUsableSpaceBytes = Math.max(0, poolUsableSpaceBytes);
+
+        return {
+          rawCapacityBytes: totalRawCapacityBytes,
+          overheadBreakdown: {
+            partitionAndAlignment: totalPerDiskOverhead,
+            metaslabAllocationLoss: metaslabLoss,
+            slopSpaceReservation: slopSpaceReservation,
+          },
+          totalOverheadBytes: totalOverheadBytes,
+          overheadPercentage: overheadPercentage,
+          usableSpaceBytes: finalPoolUsableSpaceBytes,
+          usablePercentage: 100 - overheadPercentage,
+        };
+      }
+
+      function getFaultToleranceExplanation(redundancy, disks) {
+        switch (redundancy) {
+          case "none":
+            return "No fault tolerance. If any disk fails, all data is lost.";
+          case "single":
+            return "Can survive the failure of <strong>1</strong> disk. If more than <strong>1</strong> disk fails, data will be lost.";
+          case "double":
+            return "Can survive the failure of up to <strong>2</strong> disks. If more than <strong>2</strong> disks fail, data will be lost.";
+          case "triple":
+            return "Can survive the failure of up to <strong>3</strong> disks. If more than <strong>3</strong> disks fail, data will be lost.";
+          case "mirror":
+            const pairs = Math.floor(disks / 2);
+            return `Can survive the failure of <strong>1</strong> disk in each mirror pair. Up to <strong>${pairs}</strong> disk failures can be tolerated if they occur in different mirror pairs.`;
+          default:
+            return "Fault tolerance information not available.";
+        }
+      }
+
+      function updateDiskSizeAriaLabel() {
+        const diskSizeInputEl = document.getElementById("diskSize");
+        // Use the selectedUnit state variable
+        const unitText = selectedUnit === "TB" ? "terabytes" : "gigabytes";
+        const baseBytes =
+          selectedUnit === "TB" ? "1,000,000,000,000" : "1,000,000,000";
+        diskSizeInputEl.setAttribute(
+          "aria-label",
+          `Size of each disk in ${unitText} (1 ${selectedUnit} = ${baseBytes} bytes)`
+        );
+      }
+
+      function calculate() {
+        const disks = parseInt(document.getElementById("disks").value);
+        const diskSizeInput = parseFloat(
+          document.getElementById("diskSize").value
+        );
+        // Unit comes from the selectedUnit state variable
+        const redundancy = document.getElementById("faultTolerance").value;
+
+        let diskSizeBytes;
+        let errorMessage = "";
+
+        // Convert input size to bytes based on selected unit
+        if (selectedUnit === "TB") {
+          diskSizeBytes = diskSizeInput * TB_IN_BYTES;
+        } else if (selectedUnit === "GB") {
+          diskSizeBytes = diskSizeInput * GB_IN_BYTES;
+        } else {
+          errorMessage = "Invalid disk size unit selected."; // Should not happen
+        }
+
+        // Check for valid disk size input
+        if (!errorMessage && (isNaN(diskSizeInput) || diskSizeInput <= 0)) {
+          errorMessage = `Disk size must be greater than 0 ${selectedUnit}`; // Use state variable
+        }
+
+        // Check for valid number of disks
+        if (isNaN(disks) || disks < 1) {
+          errorMessage = "Number of disks must be at least 1";
+        }
+
+        if (errorMessage) {
+          document.getElementById("error").textContent = errorMessage;
+          document.getElementById("error").style.display = "flex";
+          document.getElementById("results").style.display = "none";
+          return;
+        }
+
+        let usableDisks;
+        let mirrorPairs = 0;
+
+        switch (redundancy) {
+          case "none":
+            usableDisks = disks;
+            mirrorPairs = 0;
+            break;
+          case "single":
+            if (disks < 2) errorMessage = "RAIDZ1 requires at least 2 disks";
+            usableDisks = disks - 1;
+            mirrorPairs = 0;
+            break;
+          case "double":
+            if (disks < 3) errorMessage = "RAIDZ2 requires at least 3 disks";
+            usableDisks = disks - 2;
+            mirrorPairs = 0;
+            break;
+          case "triple":
+            if (disks < 4) errorMessage = "RAIDZ3 requires at least 4 disks";
+            usableDisks = disks - 3;
+            mirrorPairs = 0;
+            break;
+          case "mirror":
+            if (disks % 2 !== 0) {
+              errorMessage = "Mirror pairs require an even number of disks";
+            } else if (disks < 2) {
+              errorMessage = "Mirror requires at least 2 disks";
+            } else {
+              mirrorPairs = disks / 2;
+              usableDisks = mirrorPairs;
+            }
+            break;
+          default:
+            errorMessage = "Invalid redundancy level selected";
+            usableDisks = 0; // Prevent further calculation
+            break;
+        }
+
+        // Check for valid usable disks resulting from redundancy checks
+        if (!errorMessage && usableDisks < 1) {
+          errorMessage = `Not enough disks (${disks}) for ${redundancy} redundancy level.`;
+        }
+
+        if (errorMessage) {
+          document.getElementById("error").textContent = errorMessage;
+          document.getElementById("error").style.display = "flex";
+          document.getElementById("results").style.display = "none";
+          return;
+        }
+
+        // --- Calculations ---
+
+        // 1. Calculate ZFS overhead based on *total* raw capacity
+        const zfsOverheadResult = calculateZFSOverhead(disks, diskSizeBytes);
+
+        // 2. Calculate "Usable Capacity (Pre-Overhead)" - Capacity after redundancy only
+        const usableCapacityBytes = usableDisks * diskSizeBytes;
+        const usableCapacityTB = usableCapacityBytes / TB_IN_BYTES;
+
+        // 3. Calculate "Effective Capacity (Actual)"
+        const dataDiskProportion = disks > 0 ? usableDisks / disks : 0;
+        const effectiveCapacityBytes =
+          zfsOverheadResult.usableSpaceBytes * dataDiskProportion;
+        const effectiveCapacityTB = effectiveCapacityBytes / TB_IN_BYTES;
+
+        // --- Update Display ---
+        const errorElement = document.getElementById("error");
+        const resultsElement = document.getElementById("results");
+
+        if (errorElement) {
+          errorElement.style.display = "none";
+        }
+
+        if (resultsElement) {
+          resultsElement.style.display = "block";
+        }
+
+        document.getElementById(
+          "usableCapacity"
+        ).textContent = `${usableCapacityTB.toFixed(2)} TB`;
+        document.getElementById(
+          "effectiveCapacity"
+        ).textContent = `${effectiveCapacityTB.toFixed(2)} TB`;
+        document.getElementById(
+          "zfsOverheadPercentage"
+        ).textContent = `${zfsOverheadResult.overheadPercentage.toFixed(2)} %`;
+        document.getElementById("mirrorPairs").textContent =
+          mirrorPairs > 0 ? mirrorPairs : "-";
+        document.getElementById("faultToleranceExplanation").innerHTML =
+          getFaultToleranceExplanation(redundancy, disks);
+
+        const mirrorPairsRow = document
+          .getElementById("mirrorPairs")
+          ?.closest(".bg-neutral-700");
+        if (mirrorPairsRow) {
+          if (redundancy === "mirror") {
+            mirrorPairsRow.style.display = "block";
+          } else {
+            mirrorPairsRow.style.display = "none";
+          }
+        }
+      }
+
+      // --- Event Listeners ---
+      document.getElementById("disks").addEventListener("input", calculate);
+      document.getElementById("diskSize").addEventListener("input", calculate);
+      document
+        .getElementById("faultTolerance")
+        .addEventListener("change", calculate);
+
+      // Unit Button Group Listener
+      const unitButtons = document.querySelectorAll(".unit-button");
+      unitButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const newUnit = button.getAttribute("data-unit");
+          if (newUnit !== selectedUnit) {
+            selectedUnit = newUnit; // Update state
+
+            // Update styles
+            unitButtons.forEach((btn) => {
+              btn.classList.remove(...activeClasses);
+              btn.classList.add(...inactiveClasses);
+            });
+            button.classList.add(...activeClasses);
+            button.classList.remove(...inactiveClasses);
+
+            updateDiskSizeAriaLabel(); // Update input label
+            calculate(); // Recalculate
+          }
+        });
+      });
+
+      // --- Initial Setup ---
+      // Set initial button styles based on default selectedUnit
+      unitButtons.forEach((button) => {
+        const unit = button.getAttribute("data-unit");
+        if (unit === selectedUnit) {
           button.classList.add(...activeClasses);
           button.classList.remove(...inactiveClasses);
-
-          updateDiskSizeAriaLabel(); // Update input label
-          calculate(); // Recalculate
+        } else {
+          button.classList.add(...inactiveClasses);
+          button.classList.remove(...activeClasses);
         }
       });
-    });
-
-    // --- Initial Setup ---
-    // Set initial button styles based on default selectedUnit
-    unitButtons.forEach((button) => {
-      const unit = button.getAttribute("data-unit");
-      if (unit === selectedUnit) {
-        button.classList.add(...activeClasses);
-        button.classList.remove(...inactiveClasses);
-      } else {
-        button.classList.add(...inactiveClasses);
-        button.classList.remove(...activeClasses);
-      }
-    });
-    updateDiskSizeAriaLabel(); // Set initial aria-label
-    calculate(); // Initial calculation
-  </script>
-</body>
-
+      updateDiskSizeAriaLabel(); // Set initial aria-label
+      calculate(); // Initial calculation
+    </script>
+  </body>
 </html>
